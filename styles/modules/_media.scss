@@ -1,0 +1,26 @@
+// MEDIA OBJECT
+// -------------------------
+// Ported from @stubbornella
+
+.media {
+  overflow: hidden;
+
+  &__body {
+    overflow: hidden;
+  }
+
+  &__obj {
+    float: left;
+    margin-right: $condensed-whitespace;
+    display: block;
+
+    &--rev {
+      float: right;
+      margin-left: $condensed-whitespace;
+    }
+  }
+
+  &__heading {
+    margin: 0 0 5px 0;
+  }
+}

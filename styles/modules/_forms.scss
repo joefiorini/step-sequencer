@@ -1,0 +1,45 @@
+// FORM STYLES
+// -----------
+
+// Horizontal form
+
+.form-horizontal {
+  #{$all-text-inputs},
+  textarea,
+  select {
+    margin-right: $condensed-whitespace;
+  }
+}
+
+// Vertical form
+
+.form-vertical {
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  #{$all-text-inputs},
+  textarea,
+  select {
+    display: block;
+    margin-bottom: $default-whitespace;
+  }
+}
+
+.form-field {
+  margin-bottom: $default-whitespace;
+}
+
+// Checkbox and radio buttons
+
+.input-checkbox,
+.input-radio {
+  padding-left: $default-whitespace;
+
+  input[type="checkbox"],
+  input[type="radio"]  {
+    float: left;
+    margin: 5px 0 0 (-$default-whitespace);
+  }
+}

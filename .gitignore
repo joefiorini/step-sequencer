@@ -7,3 +7,9 @@ pom.xml
 .lein-deps-sum
 .lein-repl-history
 .lein-plugins/
+css
+tmp
+
+node_modules
+.sass-cache
+bower_components

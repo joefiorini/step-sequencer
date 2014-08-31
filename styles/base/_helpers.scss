@@ -1,0 +1,36 @@
+// HELPERS
+// ----------------------------------------
+// Extends, functions, mixins, surgical
+// classes, and animation keyframes go here
+
+// Elipsis and break text
+
+%txt-truncate {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: normal;
+}
+
+%txt-break {
+  word-break: break-all;
+  word-break: break-word;
+  word-wrap: break-word;
+}
+
+// Media query mixin
+
+@mixin respond-to($breakpoint, $query: min-width, $media: only screen) {
+  @media #{$media} and ($query: $breakpoint) {
+    @content;
+  }
+}
+
+// Notifications
+
+@mixin notification-colors($notification-color: $default-text-color) {
+  color: shade($notification-color, 50%);
+  background-color: tint($notification-color, 40%);
+  border-color: shade($notification-color, 20%);
+}
