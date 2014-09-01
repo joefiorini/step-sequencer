@@ -5,7 +5,52 @@
 (enable-console-print!)
 
 (def app-state (atom {:playing false :steps
-                      [{:freq 440 :amp 0.5 :silence false}]}))
+                      [{:freq 440 :amp 0.5 :silence false}
+                       {:freq 880 :amp 0.7 :silence false}]
+                      :context nil
+                      :current-source nil}))
+
+(defn play-sound [step source]
+  (. js/console (log "play" step))
+  (let [
+        frequency (.-frequency source)]
+    (set! (. frequency -value) (:freq step))))
+
+
+(defn play-loop [steps source state]
+  (let [last-step (last steps)
+        playing (get @state :playing)]
+      (. js/console (log (get @state :playing)))
+    (when playing
+      (doseq [step steps]
+        (js/setTimeout
+         (fn [] (play-sound (:step step) source)) (:delay step)))
+      (js/setTimeout #(play-loop steps source state) (* (:delay last-step) (count steps))))))
+
+(defn start-play-loop [state]
+  (. js/console (log "2"))
+  (let [context (js/AudioContext.)
+        source (.createOscillator context)
+        steps (get @state :steps)
+    play-steps (map-indexed (fn [index step]
+                   {:delay (* 500 index) :step step}) steps)]
+    (om/update! state :current-source source)
+    (.connect source (.-destination context))
+    (.start source 0 0 0.25)
+  (play-loop play-steps source state)))
+
+(defn stop-play-loop [state]
+  (let [source (get @state :current-source)]
+    (.stop source 0)))
+
+(defn start-playing [state ]
+  (om/update! state :playing true)
+  (. js/console (log "1"))
+  (start-play-loop state))
+
+(defn stop-playing [state]
+  (om/update! state :playing false)
+  (stop-play-loop state))
 
 (defn play-state-controls [state owner]
   (reify
@@ -15,9 +60,9 @@
                     (dom/li nil
                             (cond
                              (get state :playing) (dom/button #js {:onClick
-                               #(om/update! state :playing false)} "Stop")
+                               #(stop-playing state)} "Stop")
                              :else (dom/button #js {:onClick
-                               #(om/update! state :playing true)} "Play")))
+                               #(start-playing state)} "Play")))
                     (dom/li nil (dom/button nil "Reset"))
                     ))))
 
