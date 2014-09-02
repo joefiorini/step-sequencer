@@ -87,14 +87,15 @@
     (render [this]
             (dom/button #js {:onClick #(add-silence state owner)} "Add Silence"))))
 
+(defn update-step-freq [e step owner]
+  (om/transact! step :freq (fn [_] (.. e -target -value))))
+
 (defn step-view [{:keys [freq amp silence] :as step} owner]
-  (reify
-    om/IRender
-    (render [this]
-            (dom/div #js {:className "step"}
-                     (dom/div nil freq)
-                     (dom/div nil amp)
-                     (dom/div nil silence)))))
+  (om/component
+   (dom/div #js {:className "step"}
+            (dom/input #js {:value freq :onChange #(update-step-freq % step owner)})
+            (dom/div nil amp)
+            (dom/div nil silence))))
 
 (defn step-container-view [{:keys [steps] :as state} owner]
   (reify
