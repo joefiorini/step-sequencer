@@ -5,43 +5,41 @@
 (enable-console-print!)
 
 (def app-state (atom {:playing false :steps
-                      [{:freq 440 :amp 0.5 :silence false}
-                       {:freq 880 :amp 0.7 :silence false}]
+                      [{:freq 440 :amp 0.5 :duration 0.5 :silence false}
+                       {:freq 880 :amp 0.7 :duration 0.5 :silence false}]
                       :context nil
                       :current-source nil}))
 
-(defn play-sound [step source]
+(defn play-sound [step context]
   (. js/console (log "play" step))
-  (let [
-        frequency (.-frequency source)]
-    (set! (. frequency -value) (:freq step))))
+  (let [source (.createOscillator context)
+        frequency (.-frequency source)
+        stop-time (+ 0.3 (.-currentTime context))]
+    (.connect source (.-destination context))
+    (set! (. frequency -value) (:freq step))
+    (.start source 0)
+    (.stop source stop-time)))
 
 
-(defn play-loop [steps source state]
+(defn play-loop [steps state]
   (let [last-step (last steps)
-        playing (get @state :playing)]
+        playing (get @state :playing)
+        context (get @state :context)]
       (. js/console (log (get @state :playing)))
     (when playing
       (doseq [step steps]
         (js/setTimeout
-         (fn [] (play-sound (:step step) source)) (:delay step)))
-      (js/setTimeout #(play-loop steps source state) (* (:delay last-step) (count steps))))))
+         (fn [] (play-sound (:step step) context)) (:delay step)))
+      (js/setTimeout #(play-loop steps state) (* (:delay last-step) (count steps))))))
 
 (defn start-play-loop [state]
   (. js/console (log "2"))
   (let [context (js/AudioContext.)
-        source (.createOscillator context)
         steps (get @state :steps)
     play-steps (map-indexed (fn [index step]
                    {:delay (* 500 index) :step step}) steps)]
-    (om/update! state :current-source source)
-    (.connect source (.-destination context))
-    (.start source 0 0 0.25)
-  (play-loop play-steps source state)))
-
-(defn stop-play-loop [state]
-  (let [source (get @state :current-source)]
-    (.stop source 0)))
+    (om/update! state :context context)
+ (play-loop play-steps state)))
 
 (defn start-playing [state ]
   (om/update! state :playing true)
@@ -49,8 +47,7 @@
   (start-play-loop state))
 
 (defn stop-playing [state]
-  (om/update! state :playing false)
-  (stop-play-loop state))
+  (om/update! state :playing false))
 
 (defn play-state-controls [state owner]
   (reify
