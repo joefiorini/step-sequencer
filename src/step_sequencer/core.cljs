@@ -5,8 +5,11 @@
 (enable-console-print!)
 
 (def app-state (atom {:playing false :steps
-                      [{:freq 440 :amp 0.5 :duration 0.5 :silence false}
-                       {:freq 880 :amp 0.7 :duration 0.5 :silence false}]
+                      [{:freq 130.81 :amp 0.5 :duration 0.5 :silence false}
+                       {:freq 146.83 :amp 0.7 :duration 0.5 :silence false}
+                       {:freq 164.81 :amp 0.7 :duration 0.5 :silence false}
+                       {:freq 174.61 :amp 0.7 :duration 0.5 :silence false}
+                       {:freq 196.00 :amp 0.7 :duration 0.5 :silence false}]
                       :context nil
                       :current-source nil}))
 
