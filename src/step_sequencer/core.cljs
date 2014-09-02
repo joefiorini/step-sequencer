@@ -30,7 +30,7 @@
       (doseq [step steps]
         (js/setTimeout
          (fn [] (play-sound (:step step) context)) (:delay step)))
-      (js/setTimeout #(play-loop steps state) (* (:delay last-step) (count steps))))))
+      (js/setTimeout #(play-loop steps state) (+ (:delay last-step) 500)))))
 
 (defn start-play-loop [state]
   (. js/console (log "2"))
