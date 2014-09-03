@@ -47,7 +47,6 @@
                                     (find-thing (last (get @state :steps)) (get @state :steps))) 500)))))
 
 (defn start-play-loop [state]
-  (. js/console (log "2"))
   (let [context (js/AudioContext.)
         steps (get @state :steps)]
     (om/update! state :context context)
@@ -55,7 +54,6 @@
 
 (defn start-playing [state ]
   (om/update! state :playing true)
-  (. js/console (log "1"))
   (start-play-loop state))
 
 (defn stop-playing [state]
