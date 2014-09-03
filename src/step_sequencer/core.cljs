@@ -12,6 +12,14 @@
                        {:freq 196.00 :amp 0.7 :duration 0.5 :silence false}]
                       :context nil
                       :current-source nil}))
+(defn indices-of [f coll]
+  (keep-indexed #(if (f %2) %1 nil) coll))
+
+(defn first-index-of [f coll]
+  (first (indices-of f coll)))
+
+(defn find-thing [value coll]
+  (first-index-of #(= % value) coll))
 
 (defn play-sound [step context]
   (. js/console (log "play" step))
@@ -23,26 +31,27 @@
     (.start source 0)
     (.stop source stop-time)))
 
+(defn calc-delay [step index]
+  (* 500 index))
 
-(defn play-loop [steps state]
-  (let [last-step (last steps)
-        playing (get @state :playing)
+(defn play-loop [state]
+  (let [playing (get @state :playing)
         context (get @state :context)]
       (. js/console (log (get @state :playing)))
     (when playing
-      (doseq [step steps]
+      (doseq [step (get @state :steps)]
         (js/setTimeout
-         (fn [] (play-sound (:step step) context)) (:delay step)))
-      (js/setTimeout #(play-loop steps state) (+ (:delay last-step) 500)))))
+         (fn [] (play-sound step context)) (calc-delay step (find-thing step (get @state :steps)))))
+      (js/setTimeout #(play-loop state)
+                     (+ (calc-delay (last (get @state :steps))
+                                    (find-thing (last (get @state :steps)) (get @state :steps))) 500)))))
 
 (defn start-play-loop [state]
   (. js/console (log "2"))
   (let [context (js/AudioContext.)
-        steps (get @state :steps)
-    play-steps (map-indexed (fn [index step]
-                   {:delay (* 500 index) :step step}) steps)]
+        steps (get @state :steps)]
     (om/update! state :context context)
- (play-loop play-steps state)))
+ (play-loop state)))
 
 (defn start-playing [state ]
   (om/update! state :playing true)
